@@ -1,0 +1,29 @@
+{
+  "name": "babel_code_analysis",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@babel/core": "^7.7.5",
+    "glob": "^7.1.6",
+    "p-map": "^3.0.0",
+    "yargs": "^15.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.17"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fforres/babel_code_analysis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fforres/babel_code_analysis/issues"
+  },
+  "homepage": "https://github.com/fforres/babel_code_analysis#readme",
+  "description": ""
+}
