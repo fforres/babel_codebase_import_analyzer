@@ -1,124 +1,11 @@
 /* eslint-disable no-console */
 import babel from "@babel/core";
-import glob from "glob";
-import { resolve } from "path";
-import { existsSync } from "fs";
-import { promises } from "fs";
 import pMap from "p-map";
-const { readFile, writeFile, mkdir } = promises;
+import { saveToFile, getFileContent, getFilesToProcess } from "./fileHandlers";
+import { flatten, pushToMap } from "./utils";
 
 const mapOfImportsByFiles = {};
 const mapOfImportsByImportSources = {};
-
-const getFilesToProcess = path => {
-  const allFiles = glob.sync(path);
-  const filteredFiles = allFiles.filter(
-    e =>
-      // filtering can be changed here to avoid folders or files
-      !e.includes("__generated__") &&
-      !e.includes("reports/dist") &&
-      !e.includes("dashboard/dist") &&
-      !e.endsWith(".json") &&
-      (e.endsWith(".tsx") ||
-        e.endsWith(".jsx") ||
-        e.endsWith(".ts") ||
-        e.endsWith(".js"))
-  );
-  return filteredFiles;
-};
-
-const getFileContent = async file => {
-  const fileContent = await readFile(file);
-  return fileContent.toString();
-};
-
-const hasImportDeclaration = node => node.type === "ImportDeclaration";
-
-const getDefaultImportInformation = node => {
-  const defaultImport = node.specifiers.find(
-    ({ type }) => type === "ImportDefaultSpecifier"
-  );
-  if (defaultImport) {
-    return {
-      hasDefaultImport: true,
-      defaultImportName: defaultImport.local.name
-    };
-  }
-  return {
-    hasDefaultImport: false,
-    defaultImportName: ""
-  };
-};
-
-const getNamedImportsInformation = node => {
-  const namedImportsNames = node.specifiers
-    .filter(specifier => specifier.type === "ImportSpecifier")
-    .map(specifier => {
-      if (specifier.local.type !== "Identifier") {
-        return null;
-      }
-      return specifier.local.name;
-    })
-    .filter(importName => Boolean(importName));
-  return {
-    hasNamedImports: namedImportsNames.length > 0,
-    namedImportsNames
-  };
-};
-
-const pushToMap = (object, key, value) => {
-  if (!object[key]) {
-    object[key] = []; // eslint-disable-line no-param-reassign
-  }
-  object[key].push(value); // eslint-disable-line no-param-reassign
-};
-
-const getImportInformation = (node, filename) => {
-  if (!hasImportDeclaration(node)) {
-    return null;
-  }
-  const { hasNamedImports, namedImportsNames } = getNamedImportsInformation(
-    node
-  );
-  const { hasDefaultImport, defaultImportName } = getDefaultImportInformation(
-    node
-  );
-
-  const source = node.source.value;
-  const result = {
-    source,
-    filename,
-    hasNamedImports,
-    hasDefaultImport,
-    namedImportsNames,
-    defaultImportName,
-    datadogTags: [
-      `has-named-imports:${hasNamedImports}`,
-      `has-default-import:${hasDefaultImport}`,
-      `file-name:${filename}`,
-      `import-source:${source}`,
-      ...namedImportsNames.map(
-        namedImportsName => `named-imports-names:${namedImportsName}`
-      ),
-      `default-import-name:${defaultImportName}`
-    ]
-  };
-  pushToMap(mapOfImportsByImportSources, source, result);
-  return result;
-};
-
-const flat = arr => arr.reduce((acc, val) => acc.concat(val), []); // [1, 2, 3, 4]
-
-const saveToFile = async (file, filename) => {
-  const folderPath = resolve(__dirname, "db");
-  if (!existsSync(folderPath)) {
-    await mkdir(folderPath);
-  }
-  await writeFile(
-    resolve(__dirname, "db", filename),
-    JSON.stringify(file, null, 2)
-  );
-};
 
 export const start = async pathToCheck => {
   const files = getFilesToProcess(pathToCheck);
@@ -151,9 +38,9 @@ export const start = async pathToCheck => {
     }
   );
   console.timeEnd(`time processing ${files.length} files`);
-  const flatten = flat(arrayOfImportInformation);
+  const flatted = flatten(arrayOfImportInformation);
   await saveToFile(files, "processedFiles.json");
-  await saveToFile(flatten, "arrayOfImportInformation.json");
+  await saveToFile(flatted, "arrayOfImportInformation.json");
   await saveToFile(mapOfImportsByFiles, "mapOfImportsByFiles.json");
   await saveToFile(
     mapOfImportsByImportSources,

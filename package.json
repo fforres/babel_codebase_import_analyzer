@@ -36,7 +36,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./build && tsc",
-    "dev": "ts-node-dev ./src",
+    "dev": "ts-node-dev ./src/cli.ts",
+    "run": "ts-node ./src/cli.ts",
+    "debug": "node -r ts-node/register ./src/cli.ts",
     "precommit": "lint-staged"
   },
   "repository": {
