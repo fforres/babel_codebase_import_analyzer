@@ -1,7 +1,3 @@
 [
-  "/mnt/c/Users/felip/Github/babel_code_analysis/src/mocks/analyze.ts",
-  "/mnt/c/Users/felip/Github/babel_code_analysis/src/mocks/fileHandlers.tsx",
-  "/mnt/c/Users/felip/Github/babel_code_analysis/src/mocks/index.js",
-  "/mnt/c/Users/felip/Github/babel_code_analysis/src/mocks/index.ts",
-  "/mnt/c/Users/felip/Github/babel_code_analysis/src/mocks/utils.ts"
+  "./src/index.js"
 ]
