@@ -9,12 +9,12 @@ const mapOfImportsByFiles = {};
 const mapOfImportsByImportSources = {};
 
 export const start = async pathToCheck => {
-  const files = getFilesToProcess(pathToCheck);
+  const files = await getFilesToProcess(pathToCheck);
   if (!files.length) {
     console.error("No files to process");
     return;
   }
-  // console.log(`Looking to process processing ${files.length} files`);
+  console.log(`Looking to process processing ${files.length} files`);
   console.time(`time processing ${files.length} files`);
   const arrayOfImportInformation = await pMap(
     files,

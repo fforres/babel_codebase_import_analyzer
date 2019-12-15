@@ -26,8 +26,9 @@ test.only("getFilesToProcess returns only allowed extensions", async t => {
   const defaultFiles = ["fileHandlers.tsx", "index.js", "index.md"];
   const settings: SettingsType = {
     ...getSettings(),
-    allowPatterns: ["*.tsx", "*.js", "*.md"]
+    allowedFilesPatterns: ["**/*.tsx", "**/*.js", "**/*.md"]
   };
+  global.console = t as any;
   const filePaths = filePathGetter(defaultFolderPath, defaultFiles);
   const files = await getFilesToProcess(defaultFolderPath, settings);
   t.is(files.length, 3);
@@ -43,8 +44,8 @@ test("getFilesToProcess filter out ignorePatterns", async t => {
   ];
   const settings: SettingsType = {
     ...getSettings(),
-    allowPatterns: ["*.*"],
-    ignorePatterns: ["*.md", "*.js"]
+    allowedFilesPatterns: ["**/*.*"],
+    ignorePatterns: ["**/*.md", "***/.js"]
   };
   const filePaths = filePathGetter(defaultFolderPath, defaultFiles);
   const files = await getFilesToProcess(defaultFolderPath, settings);

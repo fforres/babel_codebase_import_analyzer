@@ -42,7 +42,7 @@
     "test": "ava",
     "build": "rimraf ./build && tsc",
     "dev": "ts-node-dev ./src/cli.ts",
-    "run": "ts-node ./src/cli.ts",
+    "start": "ts-node ./src/cli.ts",
     "debug": "node -r ts-node/register ./src/cli.ts",
     "precommit": "lint-staged"
   },
