@@ -1,50 +1,48 @@
-/* tslint:disable */
-import babel from "@babel/core";
+/* eslint-disable no-console */
+import { parseAsync } from "@babel/core";
+import { Program } from "@babel/types/lib";
+
 import pMap from "p-map";
 import { saveToFile, getFileContent, getFilesToProcess } from "./fileHandlers";
 import { flatten, pushToMap } from "./utils";
-import { getImportInformation } from "./analyze";
+import { getImportInformation } from "./dataExtraction";
+import { SettingsType } from "./settings";
 
-const mapOfImportsByFiles = {};
-const mapOfImportsByImportSources = {};
+const informationByFile = {};
+const informationByImportSource = {};
 
-export const start = async pathToCheck => {
-  const files = getFilesToProcess(pathToCheck);
-  if (!files.length) {
-    console.error("No files to process");
-    return;
+export const start = async (settings: SettingsType) => {
+  const filesToProcess = await getFilesToProcess(settings.dir);
+  if (!filesToProcess.length) {
+    throw new Error("No files to process");
   }
-  // console.log(`Looking to process processing ${files.length} files`);
-  console.time(`time processing ${files.length} files`);
+  console.log(`Looking to process processing ${filesToProcess.length} files`);
+  console.time(`time processing ${filesToProcess.length} files`);
   const arrayOfImportInformation = await pMap(
-    files,
+    filesToProcess,
     async filename => {
       console.time(`time processing ${filename}`);
       const fileContent = await getFileContent(filename);
-      const ast = (await babel.parseAsync(fileContent, {
+      const parsedCode = (await parseAsync(fileContent, {
         filename,
         ast: true
-      })) as any;
-      console.log({ ast });
-      const Nodes = ast.program.body || [];
+      })) as { program: Program }; // Needed because babel types do not return proper types for parseAsync()
+      const Nodes = parsedCode?.program?.body || [];
       const importInformation = Nodes.map(node =>
-        getImportInformation(node, filename, mapOfImportsByImportSources)
+        getImportInformation(node, filename, informationByImportSource)
       ).filter(importInfo => Boolean(importInfo));
-      pushToMap(mapOfImportsByFiles, filename, importInformation);
+      pushToMap(informationByFile, filename, importInformation);
       console.timeEnd(`time processing ${filename}`);
       return importInformation;
     },
     {
-      concurrency: 15
+      concurrency: 1
     }
   );
-  console.timeEnd(`time processing ${files.length} files`);
+  console.timeEnd(`time processing ${filesToProcess.length} files`);
   const flatted = flatten(arrayOfImportInformation);
-  await saveToFile(files, "processedFiles.json");
+  await saveToFile(filesToProcess, "processedFiles.json");
   await saveToFile(flatted, "arrayOfImportInformation.json");
-  await saveToFile(mapOfImportsByFiles, "mapOfImportsByFiles.json");
-  await saveToFile(
-    mapOfImportsByImportSources,
-    "mapOfImportsByImportSources.json"
-  );
+  await saveToFile(informationByFile, "informationByFile.json");
+  await saveToFile(informationByImportSource, "informationByImportSource.json");
 };

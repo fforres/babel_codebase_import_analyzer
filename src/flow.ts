@@ -40,9 +40,13 @@ export const start = async (settings: SettingsType) => {
     }
   );
   console.timeEnd(`time processing ${filesToProcess.length} files`);
-  const flatted = flatten(arrayOfImportInformation);
+  console.time(`Time saving files`);
   await saveToFile(filesToProcess, "processedFiles.json");
-  await saveToFile(flatted, "arrayOfImportInformation.json");
+  await saveToFile(
+    flatten(arrayOfImportInformation),
+    "arrayOfImportInformation.json"
+  );
   await saveToFile(informationByFile, "informationByFile.json");
   await saveToFile(informationByImportSource, "informationByImportSource.json");
+  console.time(`Time saving files`);
 };
