@@ -12,11 +12,11 @@ export const checkAndCreatePath = async folderPath => {
   }
 };
 
-export const saveToFile = async (file: string, filename: string) => {
+export const saveToFile = async (data: any, filename: string) => {
   await checkAndCreatePath(resolve(__dirname, "db"));
   await writeFile(
     resolve(__dirname, "db", filename),
-    JSON.stringify(file, null, 2)
+    JSON.stringify(data, null, 2)
   );
 };
 

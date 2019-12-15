@@ -1,4 +1,5 @@
 import { pushToMap } from "./utils";
+import { extname, basename, dirname } from "path";
 
 const hasImportDeclaration = node => node.type === "ImportDeclaration";
 
@@ -52,22 +53,18 @@ export const getImportInformation = (
   const source = node.source.value;
   const result = {
     source,
-    filename,
+    file: {
+      fullPath: filename,
+      extension: extname(filename),
+      basename: basename(filename),
+      dir: dirname(filename)
+    },
     hasNamedImports,
     hasDefaultImport,
     namedImportsNames,
-    defaultImportName,
-    datadogTags: [
-      `has-named-imports:${hasNamedImports}`,
-      `has-default-import:${hasDefaultImport}`,
-      `file-name:${filename}`,
-      `import-source:${source}`,
-      ...namedImportsNames.map(
-        namedImportsName => `named-imports-names:${namedImportsName}`
-      ),
-      `default-import-name:${defaultImportName}`
-    ]
+    defaultImportName
   };
   pushToMap(mapOfImportsByImportSources, source, result);
+  console.log({ result });
   return result;
 };
