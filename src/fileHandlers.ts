@@ -1,10 +1,12 @@
 import { resolve } from "path";
-import glob from "glob";
+import glob from "globby";
 import { existsSync } from "fs";
 import { promises } from "fs";
+import minimatch from "minimatch";
+import { SettingsType } from "./settings";
 const { readFile, writeFile, mkdir } = promises;
 
-export const saveToFile = async (file, filename) => {
+export const saveToFile = async (file: string, filename: string) => {
   const folderPath = resolve(__dirname, "db");
   if (!existsSync(folderPath)) {
     await mkdir(folderPath);
@@ -15,24 +17,39 @@ export const saveToFile = async (file, filename) => {
   );
 };
 
-export const getFileContent = async file => {
+export const getFileContent = async (file: string) => {
   const fileContent = await readFile(file);
   return fileContent.toString();
 };
 
-export const getFilesToProcess = path => {
-  const allFiles = glob.sync(path);
-  const filteredFiles = allFiles.filter(
-    e =>
-      // filtering can be changed here to avoid folders or files
-      !e.includes("__generated__") &&
-      !e.includes("reports/dist") &&
-      !e.includes("dashboard/dist") &&
-      !e.endsWith(".json") &&
-      (e.endsWith(".tsx") ||
-        e.endsWith(".jsx") ||
-        e.endsWith(".ts") ||
-        e.endsWith(".js"))
+export const getFilesToProcess = async (
+  path: string,
+  settings: SettingsType
+) => {
+  const allFiles = await glob(path, {
+    expandDirectories: true
+  });
+  // Filter allowed extensions
+
+  const allowedPatterns = settings.allowPatterns.map(
+    pattern => `**/${pattern}`
   );
-  return filteredFiles;
+  const filesFilteredByAllowedExtension = allFiles.filter(file => {
+    return allowedPatterns.some(allowedPattern => {
+      return minimatch(file, allowedPattern);
+    });
+  });
+
+  const ignorePatterns = settings.ignorePatterns.map(
+    pattern => `**/${pattern}`
+  );
+  const filesFilteredByIgnorePatterns = filesFilteredByAllowedExtension.filter(
+    file => {
+      return !ignorePatterns.some(ignorePattern => {
+        return minimatch(file, ignorePattern);
+      });
+    }
+  );
+
+  return filesFilteredByIgnorePatterns;
 };

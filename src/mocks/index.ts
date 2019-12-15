@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* tslint:disable */
 import babel from "@babel/core";
 import pMap from "p-map";
 import { saveToFile, getFileContent, getFilesToProcess } from "./fileHandlers";

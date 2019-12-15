@@ -8,12 +8,12 @@ program
   .requiredOption("-d, --dir", "Directory to analyze")
   .option("-o, --output", "Path for analysis output - Default: ./db")
   .option(
-    "-a, --allow",
-    "Comma separated list of glob patterns to allow - Default: [.js,.jsx,.ts,.tsx]"
+    "-a, --allowedExtensions",
+    "Comma separated list of extensions to allow certain file extensions - Default: [.js,.jsx,.ts,.tsx]"
   )
   .option(
     "-i, --ignore",
-    "Comma separated list of glob patterns to allow - Default: []"
+    "Comma separated list of glob patterns to ignore - Default: []"
   );
 
 program.parse(process.argv);
