@@ -1,12 +1,11 @@
 /* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
-const babel = require("@babel/core");
-const glob = require("glob");
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { resolve } = require("path");
-const { existsSync } = require("fs");
-const { readFile, writeFile, mkdir } = require("fs").promises;
-const pMap = require("p-map");
+import babel from "@babel/core";
+import glob from "glob";
+import { resolve } from "path";
+import { existsSync } from "fs";
+import { promises } from "fs";
+import pMap from "p-map";
+const { readFile, writeFile, mkdir } = promises;
 
 const mapOfImportsByFiles = {};
 const mapOfImportsByImportSources = {};
@@ -121,10 +120,10 @@ const saveToFile = async (file, filename) => {
   );
 };
 
-const start = async pathToCheck => {
+export const start = async pathToCheck => {
   const files = getFilesToProcess(pathToCheck);
   if (!files.length) {
-    console.error(`No files to process`);
+    console.error("No files to process");
     return;
   }
   // console.log(`Looking to process processing ${files.length} files`);
@@ -134,10 +133,11 @@ const start = async pathToCheck => {
     async filename => {
       console.time(`time processing ${filename}`);
       const fileContent = await getFileContent(filename);
-      const ast = await babel.parseAsync(fileContent, {
+      const ast = (await babel.parseAsync(fileContent, {
         filename,
         ast: true
-      });
+      })) as any;
+      console.log({ ast });
       const Nodes = ast.program.body || [];
       const importInformation = Nodes.map(node =>
         getImportInformation(node, filename)
@@ -160,5 +160,3 @@ const start = async pathToCheck => {
     "mapOfImportsByImportSources.json"
   );
 };
-
-module.exports.start = start;
