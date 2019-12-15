@@ -21,8 +21,9 @@ export const saveToFile = async (file: string, filename: string) => {
 };
 
 export const getFileContent = async (file: string) => {
-  const fileContent = await readFile(file);
-  return fileContent.toString();
+  const fileBuffer = await readFile(file);
+  const fileContent = fileBuffer.toString();
+  return fileContent;
 };
 
 export const getFilesToProcess = async (

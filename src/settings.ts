@@ -2,6 +2,7 @@ import { constants, promises } from "fs";
 import { checkAndCreatePath } from "./fileHandlers";
 
 const { access } = promises;
+
 const defaultSetting: SettingsType = {
   dir: "",
   output: "./db",

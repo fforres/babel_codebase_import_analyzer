@@ -6,6 +6,7 @@ import {
   parseOutput,
   getSettings
 } from "./settings";
+import { start } from "./flow";
 const program = new commander.Command();
 
 program
@@ -37,6 +38,7 @@ const config = async () => {
 };
 
 config()
+  .then(() => start(getSettings()))
   .then(() => {
     process.exit(0);
   })
