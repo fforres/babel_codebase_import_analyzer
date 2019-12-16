@@ -1,10 +1,17 @@
 {
-  "name": "babel_code_analysis",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "@fforres/cia",
+  "version": "0.0.1",
+  "main": "build/flow.js",
+  "bin": {
+    "cia": "./bin/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@babel/core": "^7.7.5",
     "commander": "^4.0.1",
+    "esm": "^3.2.25",
     "globby": "^10.0.1",
     "husky": "^3.1.0",
     "minimatch": "^3.0.4",
@@ -41,6 +48,7 @@
     "eslint-plugin-promise": "~4.2.1",
     "eslint-plugin-standard": "~4.0.0",
     "lint-staged": "^9.5.0",
+    "np": "^5.2.1",
     "p-map": "^3.0.0",
     "prettier": "^1.19.1",
     "ts-node": "^8.5.4",
