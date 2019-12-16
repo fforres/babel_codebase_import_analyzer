@@ -1,6 +1,6 @@
 {
   "name": "@fforres/cia",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "build/flow.js",
   "bin": {
     "cia": "./bin/cli"
@@ -62,7 +62,8 @@
     "precommit": "lint-staged",
     "build:watch": "babel --watch src --out-dir ./build --extensions .ts",
     "build": "rimraf ./build && babel src --out-dir build --extensions .ts",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "np": "np"
   },
   "repository": {
     "type": "git",
